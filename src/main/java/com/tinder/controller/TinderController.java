@@ -22,7 +22,15 @@ public class TinderController {
 	public String getRecommendations() {
 		logger.info("Received Request for getRecommendations");
 		String myResult = tinderService.getRecommendations();
-		logger.info("Here's the response: " + myResult);
+		logger.info("Here's the getRecommendations response: " + myResult);
+
+		return myResult;
+	}
+	@RequestMapping(value = "/teasers",  produces = MediaType.APPLICATION_JSON_VALUE)
+	public String getTeaser() {
+		logger.info("Received Request for getTeasers");
+		String myResult = tinderService.getTeasers();
+		logger.info("Here's the getTeasers response: " + myResult);
 
 		return myResult;
 	}

@@ -12,4 +12,8 @@ public class TinderService {
     {
         return restClient.get(TinderConstants.RECS);
     }
+    public String getTeasers()
+    {
+        return restClient.get(TinderConstants.TEASER);
+    }
 }
