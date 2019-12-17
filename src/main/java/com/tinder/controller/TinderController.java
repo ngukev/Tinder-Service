@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TinderController {
 
-	public Logger logger = LoggerFactory.getLogger(TinderController.class.getName());
+	private Logger logger = LoggerFactory.getLogger(TinderController.class.getName());
 
 	@Autowired
 	private TinderService tinderService;
@@ -31,6 +31,15 @@ public class TinderController {
 		logger.info("Received Request for getTeasers");
 		String myResult = tinderService.getTeasers();
 		logger.info("Here's the getTeasers response: " + myResult);
+
+		return myResult;
+	}
+
+	@RequestMapping(value = "/profile",  produces = MediaType.APPLICATION_JSON_VALUE)
+	public String getProfile() {
+		logger.info("Received Request for getProfile");
+		String myResult = tinderService.getProfile();
+		logger.info("Here's the getProfile response: " + myResult);
 
 		return myResult;
 	}

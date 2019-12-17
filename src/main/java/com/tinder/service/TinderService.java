@@ -16,4 +16,8 @@ public class TinderService {
     {
         return restClient.get(TinderConstants.TEASER);
     }
+    public String getProfile()
+    {
+        return restClient.get(TinderConstants.PROFILE);
+    }
 }

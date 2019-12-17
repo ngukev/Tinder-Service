@@ -10,6 +10,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 public class RestClient {
 
@@ -31,8 +32,11 @@ public class RestClient {
     }
 
     public String get(String uri) {
+
+        String finalUrl = server + uri;
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(finalUrl);
         HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
-        ResponseEntity<String> responseEntity = rest.exchange(server + uri, HttpMethod.GET, requestEntity, String.class);
+        ResponseEntity<String> responseEntity = rest.exchange(builder.build(true).toUri(), HttpMethod.GET, requestEntity, String.class);
         this.setStatus(responseEntity.getStatusCode());
         return responseEntity.getBody();
     }
