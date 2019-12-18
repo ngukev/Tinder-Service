@@ -1,4 +1,4 @@
-package com.tinder.data;
+package com.tinder.data.response;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

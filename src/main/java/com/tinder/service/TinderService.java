@@ -1,13 +1,17 @@
 package com.tinder.service;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.tinder.client.RestClient;
 import com.tinder.constants.TinderConstants;
-import com.tinder.data.SwipeData;
-import com.tinder.data.SwipeDataResponse;
+import com.tinder.data.request.SwipeDataRequest;
+import com.tinder.data.response.RefreshDataResponse;
+import com.tinder.data.response.SwipeDataResponse;
+import lombok.var;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -15,7 +19,8 @@ import java.util.Random;
 public class TinderService {
     @Autowired
     private RestClient restClient;
-
+    @Autowired
+    private Gson gson;
     private int getRandomNumberInRange(int min, int max) {
 
         if (min >= max) {
@@ -39,10 +44,10 @@ public class TinderService {
         return restClient.get(TinderConstants.PROFILE);
     }
 
-    public SwipeDataResponse swipes(List<SwipeData> swipeDataList)
+    public SwipeDataResponse swipes(List<SwipeDataRequest> swipeDataList)
     {
         SwipeDataResponse mySwipeDataResponse = new SwipeDataResponse();
-        for(SwipeData swipeData : swipeDataList)
+        for(SwipeDataRequest swipeData : swipeDataList)
         {
             String myUrl = null;
             if(swipeData.isLiked())
@@ -60,7 +65,7 @@ public class TinderService {
             {
                 String myResponse = restClient.get(myUrl);
                 mySwipeDataResponse.getResponseList().add(myResponse);
-                int mySleepMilliSeconds = 100 * getRandomNumberInRange(4,6);
+                int mySleepMilliSeconds = 100;
                 Thread.sleep(mySleepMilliSeconds);
             }
             catch(InterruptedException ex)
@@ -70,4 +75,32 @@ public class TinderService {
         }
         return mySwipeDataResponse;
     }
+
+    public String getRefreshedData()
+    {
+        RefreshDataResponse refreshDataResponse = new RefreshDataResponse();
+
+        JsonObject myProfileResponse = gson.fromJson(getProfile(), JsonObject.class);
+        JsonObject myRecommendationResponse = gson.fromJson(getRecommendations(), JsonObject.class);
+        JsonObject myTeaserResponse = gson.fromJson(getTeasers(), JsonObject.class);
+
+        refreshDataResponse.setProfile(myProfileResponse);
+
+        if(myRecommendationResponse.getAsJsonObject().get("meta").getAsJsonObject().get("status").getAsInt() == 200)
+        {
+            JsonArray recommendationArray = myRecommendationResponse.getAsJsonObject().get("data")
+                    .getAsJsonObject().get("results").getAsJsonArray();
+            refreshDataResponse.setRecommendationList(recommendationArray);
+        }
+        if(myTeaserResponse.getAsJsonObject().get("meta").getAsJsonObject().get("status").getAsInt() == 200)
+        {
+            JsonArray teaserArray = myTeaserResponse.getAsJsonObject().get("data")
+                    .getAsJsonObject().get("results").getAsJsonArray();
+            refreshDataResponse.setTeaserList(teaserArray);
+
+        }
+        return gson.toJson(refreshDataResponse);
+    }
+
+
 }

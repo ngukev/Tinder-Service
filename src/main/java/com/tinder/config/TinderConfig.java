@@ -1,5 +1,6 @@
 package com.tinder.config;
 
+import com.google.gson.Gson;
 import com.tinder.client.RestClient;
 import com.tinder.service.TinderService;
 import org.slf4j.LoggerFactory;
@@ -15,5 +16,7 @@ public class TinderConfig {
     public RestClient getRestClient(@Value("${XAuthToken}") String xAuthToken){return new RestClient(xAuthToken);}
     @Bean
     public TinderService getTinderService(){return new TinderService();}
+    @Bean
+    public Gson getGson(){return new Gson();}
 
 }

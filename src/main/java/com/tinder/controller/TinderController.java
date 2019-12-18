@@ -1,7 +1,9 @@
 package com.tinder.controller;
 
-import com.tinder.data.SwipeData;
-import com.tinder.data.SwipeDataResponse;
+import com.google.gson.JsonObject;
+import com.tinder.data.request.SwipeDataRequest;
+import com.tinder.data.response.RefreshDataResponse;
+import com.tinder.data.response.SwipeDataResponse;
 import com.tinder.service.TinderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,10 +49,10 @@ public class TinderController {
 	}
 
 	@PostMapping(path = "/swipes", produces = MediaType.APPLICATION_JSON_VALUE)
-	public SwipeDataResponse swipes(@RequestBody List<SwipeData> swipeDataList) {
+	public SwipeDataResponse swipes(@RequestBody List<SwipeDataRequest> swipeDataList) {
 		int likedSwipesCount = 0;
 		int passSwipesCount = 0;
-		for(SwipeData swipeData : swipeDataList)
+		for(SwipeDataRequest swipeData : swipeDataList)
 		{
 			if(swipeData.isLiked())
 			{
@@ -66,4 +68,13 @@ public class TinderController {
 		logger.info("Here's the swipes response: " + myResultList);
 		return myResultList;
 	}
+
+	@RequestMapping(value = "/refresh",  produces = MediaType.APPLICATION_JSON_VALUE)
+	public String refreshData() {
+		logger.info("Received Request for refresh");
+		String refreshDataResponse = tinderService.getRefreshedData();
+		logger.info("Here's the refresh response" + refreshDataResponse);
+		return refreshDataResponse;
+	}
+
 }

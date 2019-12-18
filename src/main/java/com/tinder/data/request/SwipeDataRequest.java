@@ -1,4 +1,4 @@
-package com.tinder.data;
+package com.tinder.data.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @NoArgsConstructor
-public class SwipeData implements Serializable {
+public class SwipeDataRequest implements Serializable {
     private boolean liked;
     private String userID;
     @JsonProperty("sNumber")
