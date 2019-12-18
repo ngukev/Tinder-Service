@@ -1,13 +1,15 @@
 package com.tinder.controller;
 
+import com.tinder.data.SwipeData;
+import com.tinder.data.SwipeDataResponse;
 import com.tinder.service.TinderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @CrossOrigin
@@ -42,5 +44,26 @@ public class TinderController {
 		logger.info("Here's the getProfile response: " + myResult);
 
 		return myResult;
+	}
+
+	@PostMapping(path = "/swipes", produces = MediaType.APPLICATION_JSON_VALUE)
+	public SwipeDataResponse swipes(@RequestBody List<SwipeData> swipeDataList) {
+		int likedSwipesCount = 0;
+		int passSwipesCount = 0;
+		for(SwipeData swipeData : swipeDataList)
+		{
+			if(swipeData.isLiked())
+			{
+				likedSwipesCount++;
+			}
+			else
+			{
+				passSwipesCount++;
+			}
+		}
+		logger.info("Received Request for swipes for Likes: " + likedSwipesCount + " passes: " + passSwipesCount);
+		SwipeDataResponse myResultList = tinderService.swipes(swipeDataList);
+		logger.info("Here's the swipes response: " + myResultList);
+		return myResultList;
 	}
 }

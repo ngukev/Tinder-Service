@@ -34,6 +34,10 @@ public class RestClient {
     public String get(String uri) {
 
         String finalUrl = server + uri;
+        if(finalUrl.contains("pass") || finalUrl.contains("like"))
+        {
+            finalUrl = finalUrl.replace("v2/","");
+        }
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(finalUrl);
         HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
         ResponseEntity<String> responseEntity = rest.exchange(builder.build(true).toUri(), HttpMethod.GET, requestEntity, String.class);

@@ -7,4 +7,7 @@ public interface TinderConstants {
     public static final String PROFILE = "profile?include=account%2Cboost%2Ccontact_cards%2Cemail_settings%2C" +
             "instagram%2Clikes%2Cnotifications%2Cplus_control%2Cproducts%2Cpurchase%2Creadreceipts%2Cspotify%2C" +
             "super_likes%2Ctinder_u%2Ctravel%2Ctutorials%2Cuser&locale=en";
+
+    public static final String PASS = "pass/{USER_ID}?locale=en&s_number={S_NUMBER}";
+    public static final String LIKE = "like/{USER_ID}?locale=en&s_number={S_NUMBER}";
 }
