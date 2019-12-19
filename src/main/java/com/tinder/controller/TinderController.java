@@ -49,7 +49,7 @@ public class TinderController {
 	}
 
 	@PostMapping(path = "/swipes", produces = MediaType.APPLICATION_JSON_VALUE)
-	public SwipeDataResponse swipes(@RequestBody List<SwipeDataRequest> swipeDataList) {
+	public SwipeDataResponse swipes(@RequestBody List<SwipeDataRequest> swipeDataList) throws InterruptedException {
 		int likedSwipesCount = 0;
 		int passSwipesCount = 0;
 		for(SwipeDataRequest swipeData : swipeDataList)

@@ -11,6 +11,7 @@ import com.tinder.data.response.SwipeDataResponse;
 import lombok.var;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 import java.util.Random;
@@ -44,8 +45,7 @@ public class TinderService {
         return restClient.get(TinderConstants.PROFILE);
     }
 
-    public SwipeDataResponse swipes(List<SwipeDataRequest> swipeDataList)
-    {
+    public SwipeDataResponse swipes(List<SwipeDataRequest> swipeDataList) throws InterruptedException {
         SwipeDataResponse mySwipeDataResponse = new SwipeDataResponse();
         for(SwipeDataRequest swipeData : swipeDataList)
         {
@@ -65,12 +65,20 @@ public class TinderService {
             {
                 String myResponse = restClient.get(myUrl);
                 mySwipeDataResponse.getResponseList().add(myResponse);
-                int mySleepMilliSeconds = 100;
-                Thread.sleep(mySleepMilliSeconds);
+                Thread.sleep(20);
             }
-            catch(InterruptedException ex)
+            catch(HttpClientErrorException clientErrorException)
             {
-                Thread.currentThread().interrupt();
+                if(clientErrorException.getRawStatusCode() == 429)
+                {
+                    Thread.sleep(1000);
+                    String myResponse = restClient.get(myUrl);
+                    mySwipeDataResponse.getResponseList().add(myResponse);
+                }
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
             }
         }
         return mySwipeDataResponse;
