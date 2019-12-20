@@ -9,6 +9,8 @@ import com.tinder.data.request.SwipeDataRequest;
 import com.tinder.data.response.RefreshDataResponse;
 import com.tinder.data.response.SwipeDataResponse;
 import lombok.var;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -22,15 +24,8 @@ public class TinderService {
     private RestClient restClient;
     @Autowired
     private Gson gson;
-    private int getRandomNumberInRange(int min, int max) {
 
-        if (min >= max) {
-            throw new IllegalArgumentException("max must be greater than min");
-        }
-        Random r = new Random();
-        return r.nextInt((max - min) + 1) + min;
-    }
-
+    public Logger logger = LoggerFactory.getLogger(TinderService.class.getName());
 
     public String getRecommendations()
     {
@@ -45,7 +40,7 @@ public class TinderService {
         return restClient.get(TinderConstants.PROFILE);
     }
 
-    public SwipeDataResponse swipes(List<SwipeDataRequest> swipeDataList) throws InterruptedException {
+    public SwipeDataResponse swipes(List<SwipeDataRequest> swipeDataList) {
         SwipeDataResponse mySwipeDataResponse = new SwipeDataResponse();
         for(SwipeDataRequest swipeData : swipeDataList)
         {
@@ -65,20 +60,23 @@ public class TinderService {
             {
                 String myResponse = restClient.get(myUrl);
                 mySwipeDataResponse.getResponseList().add(myResponse);
-                Thread.sleep(20);
             }
             catch(HttpClientErrorException clientErrorException)
             {
                 if(clientErrorException.getRawStatusCode() == 429)
                 {
-                    Thread.sleep(1000);
-                    String myResponse = restClient.get(myUrl);
-                    mySwipeDataResponse.getResponseList().add(myResponse);
+                    try
+                    {
+                        logger.info("You're going too fast. Resubmitting data.");
+                        Thread.sleep(1000);
+                        String myResponse = restClient.get(myUrl);
+                        mySwipeDataResponse.getResponseList().add(myResponse);
+                    }
+                    catch (InterruptedException e)
+                    {
+                        logger.error(e.getMessage());
+                    }
                 }
-            }
-            catch(Exception e)
-            {
-                e.printStackTrace();
             }
         }
         return mySwipeDataResponse;
