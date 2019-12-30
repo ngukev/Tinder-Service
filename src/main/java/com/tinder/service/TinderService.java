@@ -113,7 +113,20 @@ public class TinderService {
     }
 
     public String validate(HashMap<String,String> myJsonObject) throws JsonProcessingException {
-        return restClient.post(TinderConstants.LOGIN_VALIDATION,myJsonObject);
+        String finalResponse = null;
+        String myResponse =  restClient.post(TinderConstants.LOGIN_VALIDATION,myJsonObject);
+        JsonObject myJsonResponse = gson.fromJson(myResponse,JsonObject.class);
+        if( myJsonResponse != null &&
+            myJsonResponse.get("meta") != null &&
+            myJsonResponse.get("meta").getAsJsonObject().get("status").getAsInt() == 200)
+        {
+            HashMap<String,String> mySMSMap = new HashMap<String,String>();
+            mySMSMap.put("phone_number",myJsonObject.get("phone_number"));
+            mySMSMap.put("refresh_token",myJsonResponse.get("data").getAsJsonObject().get("refresh_token").getAsString());
+            finalResponse = getSmsToken(mySMSMap);
+        }
+        return finalResponse;
+
     }
 
     public String getSmsToken(HashMap<String,String> myJsonObject) throws JsonProcessingException {
