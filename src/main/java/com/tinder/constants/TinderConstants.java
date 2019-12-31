@@ -10,5 +10,8 @@ public interface TinderConstants {
 
     public static final String PASS = "pass/{USER_ID}?locale=en&s_number={S_NUMBER}";
     public static final String LIKE = "like/{USER_ID}?locale=en&s_number={S_NUMBER}";
+    public static final String INITIAL_LOGIN = "auth/sms/send?auth_type=sms";
+    public static final String LOGIN_VALIDATION = "auth/sms/validate?auth_type=sms";
+    public static final String RETRIEVE_SMS_TOKEN = "auth/login/sms?locale=en";
 
 }

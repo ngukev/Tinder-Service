@@ -1,37 +1,37 @@
 package com.tinder.client;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tinder.constants.TinderConstants;
-import com.tinder.controller.TinderController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.HashMap;
 
 public class RestClient {
 
     private String server = TinderConstants.BASE_URL;
-    private RestTemplate rest;
-    private HttpHeaders headers;
-    private HttpStatus status;
+    private RestTemplate rest = new RestTemplate();
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
 
-    public Logger logger = LoggerFactory.getLogger(RestClient.class.getName());
-
-    public RestClient(String xAuthToken) {
-
-        this.rest = new RestTemplate();
-        this.headers = new HttpHeaders();
+    private HttpHeaders generateHttpHeaders(String xAuthToken)
+    {
+        HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         headers.add("User-Agent", "Tinder/11.4.0 (iPhone; iOS 12.4.1; Scale/2.00)");
-        headers.add("X-Auth-Token", xAuthToken);
+        if(xAuthToken != null)
+        {
+            headers.add("x-auth-token",xAuthToken);
+        }
+        return headers;
     }
 
-    public String get(String uri) {
+    public String get(String uri, String xAuthToken) {
 
         String finalUrl = server + uri;
         if(finalUrl.contains("pass") || finalUrl.contains("like"))
@@ -39,17 +39,17 @@ public class RestClient {
             finalUrl = finalUrl.replace("v2/","");
         }
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(finalUrl);
-        HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
+        HttpEntity<String> requestEntity = new HttpEntity<String>(null, generateHttpHeaders(xAuthToken));
         ResponseEntity<String> responseEntity = rest.exchange(builder.build(true).toUri(), HttpMethod.GET, requestEntity, String.class);
-        this.setStatus(responseEntity.getStatusCode());
         return responseEntity.getBody();
     }
 
-    public HttpStatus getStatus() {
-        return status;
+    public String post(String uri, HashMap<String,String> myRequestBody) throws JsonProcessingException {
+        String finalUrl = server + uri;
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(finalUrl);
+        HttpEntity<String> requestEntity = new HttpEntity<String>(objectMapper.writeValueAsString(myRequestBody), generateHttpHeaders(null));
+        ResponseEntity<String> responseEntity = rest.exchange(builder.build(true).toUri(), HttpMethod.POST, requestEntity, String.class);
+        return responseEntity.getBody();
     }
 
-    public void setStatus(HttpStatus status) {
-        this.status = status;
-    }
 }
